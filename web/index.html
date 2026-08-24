@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f8faf8">
+    <meta name="description" content="一个跨平台防止电脑或手机熄屏的小工具。">
+    <title>UnSleep</title>
+    <link rel="icon" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="status-panel" aria-live="polite">
+        <p class="eyebrow">跨平台防熄屏</p>
+        <h1>UnSleep</h1>
+        <p id="statusText" class="status-text">防睡眠已关闭</p>
+        <div class="timer" aria-label="防睡眠计时">
+          <span class="timer-label">已保持</span>
+          <span id="elapsedTime" class="timer-value">00:00:00</span>
+        </div>
+        <button id="wakeToggle" class="wake-button" type="button" aria-pressed="false">
+          <span class="button-icon" aria-hidden="true"></span>
+          <span id="buttonText">打开防睡眠</span>
+        </button>
+        <p id="supportText" class="support-text"></p>
+      </section>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
