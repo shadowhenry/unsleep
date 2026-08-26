@@ -1,128 +1,128 @@
 # UnSleep
 
-一个轻量、简约的跨平台桌面防熄屏应用。
+A lightweight, minimalist cross-platform desktop anti-sleep app.
 
-- 桌面端：使用 Tauri 调用系统级防睡眠能力，切到其他软件工作时仍可继续生效。
-- 浏览器预览：仅用于调试界面，不作为 PWA 发布。
+- Desktop: Uses Tauri to invoke system-level anti-sleep capabilities, which continue to work even when you switch to other apps.
+- Browser preview: For UI debugging only, not released as a PWA.
 
-## 环境准备
+## Prerequisites
 
-需要安装：
+You need to install:
 
 - Node.js
 - Rust / Cargo
-- 对应平台的 Tauri 系统依赖
+- Tauri system dependencies for your platform
 
-macOS 安装 Rust：
+Install Rust on macOS:
 
 ```bash
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-macOS 如未安装 Xcode 命令行工具：
+If Xcode Command Line Tools are not installed on macOS:
 
 ```bash
 xcode-select --install
 ```
 
-安装项目依赖：
+Install project dependencies:
 
 ```bash
 npm install
 ```
 
-## 开发运行
+## Development
 
 ```bash
 npm run dev
 ```
 
-这会启动 Tauri 桌面应用。点击“打开防睡眠”后，会启用系统级防睡眠。
+This launches the Tauri desktop app. Click "Keep Awake" to enable system-level anti-sleep.
 
-## 编译当前平台应用
+## Build for Current Platform
 
-Tauri 默认编译“当前系统对应的平台应用”。也就是说：
+By default, Tauri builds for the current system platform. That means:
 
-- 在 macOS 上执行，会编译 macOS 应用
-- 在 Windows 上执行，会编译 Windows 应用
-- 在 Linux 上执行，会编译 Linux 应用
+- Run on macOS → builds a macOS app
+- Run on Windows → builds a Windows app
+- Run on Linux → builds a Linux app
 
-通用编译指令：
+General build command:
 
 ```bash
 npm run build
 ```
 
-等价于：
+Equivalent to:
 
 ```bash
 npx tauri build
 ```
 
-## macOS 编译
+## macOS Build
 
-在 macOS 上运行：
+Run on macOS:
 
 ```bash
 npm run build
 ```
 
-如果要同时兼容 Apple Silicon 和 Intel Mac，先安装 Intel Rust target：
+To support both Apple Silicon and Intel Macs, first install the Intel Rust target:
 
 ```bash
 rustup target add x86_64-apple-darwin
 ```
 
-然后编译 Universal macOS 应用：
+Then build the Universal macOS app:
 
 ```bash
 npm run build:mac:universal
 ```
 
-也可以分别编译：
+Or build separately:
 
 ```bash
 npm run build:mac:apple
 npm run build:mac:intel
 ```
 
-常见产物位置：
+Common output locations:
 
 ```text
 src-tauri/target/release/bundle/macos/
 src-tauri/target/release/bundle/dmg/
 ```
 
-通常会生成 `.app` 和 `.dmg`。
+Usually generates `.app` and `.dmg`.
 
-## Windows 编译
+## Windows Build
 
-在 Windows 上运行：
+Run on Windows:
 
 ```powershell
 npm install
 npm run build
 ```
 
-常见产物位置：
+Common output locations:
 
 ```text
 src-tauri\target\release\bundle\nsis\
 src-tauri\target\release\bundle\msi\
 ```
 
-通常会生成 `.exe` 安装包，具体取决于 Tauri bundler 配置和本机环境。
+Usually generates `.exe` installers, depending on Tauri bundler configuration and local environment.
 
-## Linux 编译
+## Linux Build
 
-在 Linux 上运行：
+Run on Linux:
 
 ```bash
 npm install
 npm run build
 ```
 
-常见产物位置：
+Common output locations:
 
 ```text
 src-tauri/target/release/bundle/appimage/
@@ -130,124 +130,124 @@ src-tauri/target/release/bundle/deb/
 src-tauri/target/release/bundle/rpm/
 ```
 
-通常会生成 `.AppImage`、`.deb` 或 `.rpm`，具体取决于系统依赖和 Tauri 配置。
+Usually generates `.AppImage`, `.deb`, or `.rpm`, depending on system dependencies and Tauri configuration.
 
-## 跨平台打包说明
+## Cross-Platform Packaging Notes
 
-Tauri 不建议在一台机器上直接编译所有平台安装包。最稳定的方式是：
+Tauri does not recommend compiling all platform installers on a single machine. The most stable approach is:
 
-- macOS 包：在 macOS 上编译
-- Windows 包：在 Windows 上编译
-- Linux 包：在 Linux 上编译
+- macOS package: build on macOS
+- Windows package: build on Windows
+- Linux package: build on Linux
 
-如果要自动化发布，可以使用 GitHub Actions 分别在 `macos-latest`、`windows-latest`、`ubuntu-latest` 上执行：
+For automated releases, use GitHub Actions on `macos-latest`, `windows-latest`, and `ubuntu-latest`:
 
 ```bash
 npm install
 npm run build
 ```
 
-## 浏览器预览界面
+## Browser Preview
 
-如果只想预览界面：
+To preview the UI only:
 
 ```bash
 npm run preview
 ```
 
-然后打开：
+Then open:
 
 ```text
 http://localhost:5173
 ```
 
-浏览器预览只用于调试界面。正式防睡眠能力以 Tauri 客户端为准。
+Browser preview is for UI debugging only. The actual anti-sleep capability is provided by the Tauri client.
 
-## 防睡眠实现
+## Anti-Sleep Implementation
 
-- macOS：调用 `caffeinate`
-- Windows：调用 `SetThreadExecutionState`
-- Linux：调用 `systemd-inhibit`
-- 浏览器预览：调用 `Screen Wake Lock API` 作为调试兜底
+- macOS: calls `caffeinate`
+- Windows: calls `SetThreadExecutionState`
+- Linux: calls `systemd-inhibit`
+- Browser preview: falls back to `Screen Wake Lock API` for debugging
 
-## 菜单栏 / 托盘
+## Menu Bar / Tray
 
-桌面客户端会停靠在系统菜单栏或托盘中。
+The desktop client docks in the system menu bar or tray.
 
-菜单项：
+Menu items:
 
-- 显示窗口
-- 打开防睡眠 / 关闭防睡眠
-- 退出
+- Show Window
+- Keep Awake / Allow Sleep
+- Quit
 
-macOS 上显示在顶部菜单栏；Windows 和 Linux 上显示在系统托盘区域。iOS 没有系统托盘概念，因此不支持这个入口。
+On macOS it appears in the top menu bar; on Windows and Linux it appears in the system tray. iOS does not have a system tray concept, so this entry is not supported.
 
-## iOS 编译
+## iOS Build
 
-iOS 命令只能在 macOS 上使用，并且需要 Xcode、iOS target 和 Apple 签名环境。
+iOS commands can only be run on macOS, and require Xcode, the iOS target, and Apple signing environment.
 
-首次初始化 iOS 工程：
+Initialize the iOS project for the first time:
 
 ```bash
 npm run tauri ios init
 ```
 
-或使用项目脚本：
+Or use the project script:
 
 ```bash
 npm run ios:init
 ```
 
-开发运行到模拟器或设备：
+Develop on simulator or device:
 
 ```bash
 npm run tauri ios dev
 ```
 
-或：
+Or:
 
 ```bash
 npm run ios:dev
 ```
 
-编译 iOS release 包：
+Build iOS release:
 
 ```bash
 npm run tauri ios build
 ```
 
-或：
+Or:
 
 ```bash
 npm run ios:build
 ```
 
-打开 Xcode 工程进行归档、签名和发布：
+Open the Xcode project for archiving, signing, and release:
 
 ```bash
 npm run tauri ios build -- --open
 ```
 
-或：
+Or:
 
 ```bash
 npm run ios:open
 ```
 
-App Store Connect 导出：
+App Store Connect export:
 
 ```bash
 npm run tauri ios build -- --export-method app-store-connect
 ```
 
-生成的 IPA 通常在：
+Generated IPA is usually at:
 
 ```text
 src-tauri/gen/apple/build/arm64/UnSleep.ipa
 ```
 
-注意：当前 iOS 版本可用于编译客户端框架，但防睡眠原生实现还需要额外接入 iOS 的 `idleTimerDisabled` 能力。
+Note: The current iOS version can be compiled as a client framework, but the native anti-sleep implementation still needs additional integration with iOS's `idleTimerDisabled` capability.
 
-## 开源协议
+## License
 
 MIT
