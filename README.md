@@ -67,6 +67,25 @@ npx tauri build
 npm run build
 ```
 
+如果要同时兼容 Apple Silicon 和 Intel Mac，先安装 Intel Rust target：
+
+```bash
+rustup target add x86_64-apple-darwin
+```
+
+然后编译 Universal macOS 应用：
+
+```bash
+npm run build:mac:universal
+```
+
+也可以分别编译：
+
+```bash
+npm run build:mac:apple
+npm run build:mac:intel
+```
+
 常见产物位置：
 
 ```text

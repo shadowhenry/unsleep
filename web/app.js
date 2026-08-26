@@ -1,8 +1,9 @@
 const toggleButton = document.querySelector("#wakeToggle");
-const buttonText = document.querySelector("#buttonText");
 const statusText = document.querySelector("#statusText");
+const statusBadge = document.querySelector("#statusBadge");
 const supportText = document.querySelector("#supportText");
 const elapsedTime = document.querySelector("#elapsedTime");
+const switchTrack = document.querySelector("#switchTrack");
 
 let wakeLock = null;
 let isRequested = false;
@@ -14,6 +15,9 @@ const nativeListen = window.__TAURI__?.event?.listen;
 const isNativeApp = Boolean(nativeInvoke);
 const hasWakeLock = "wakeLock" in navigator;
 const isSecure = window.isSecureContext;
+
+switchTrack.dataset.onLabel = "开";
+switchTrack.dataset.offLabel = "关";
 
 function formatElapsed(milliseconds) {
   const totalSeconds = Math.max(0, Math.floor(milliseconds / 1000));
@@ -47,10 +51,16 @@ function stopTimer() {
   updateTimer();
 }
 
+function setBusy(busy) {
+  toggleButton.classList.toggle("is-busy", busy);
+  toggleButton.disabled = busy;
+  toggleButton.setAttribute("aria-busy", String(busy));
+}
+
 function setUi(active, message) {
   toggleButton.classList.toggle("is-on", active);
+  statusBadge.classList.toggle("is-on", active);
   toggleButton.setAttribute("aria-pressed", String(active));
-  buttonText.textContent = active ? "关闭防睡眠" : "打开防睡眠";
   statusText.textContent = message || (active ? "防睡眠运行中" : "防睡眠已关闭");
 
   if (active) {
@@ -67,14 +77,18 @@ function setSupportMessage(message) {
 async function requestWakeLock() {
   if (isNativeApp) {
     try {
+      setBusy(true);
+      toggleButton.classList.add("is-on");
       await nativeInvoke("enable_prevent_sleep");
       isRequested = true;
       setUi(true, "防睡眠运行中");
-      setSupportMessage("已启用系统级防睡眠，切到其他软件时仍会尽量保持生效。");
+      setSupportMessage("已启用系统级防睡眠");
     } catch (error) {
       isRequested = false;
       setUi(false, "防睡眠开启失败");
       setSupportMessage(String(error));
+    } finally {
+      setBusy(false);
     }
     return;
   }
@@ -90,6 +104,8 @@ async function requestWakeLock() {
   }
 
   try {
+    setBusy(true);
+    toggleButton.classList.add("is-on");
     wakeLock = await navigator.wakeLock.request("screen");
     isRequested = true;
     setUi(true, "防睡眠运行中");
@@ -107,6 +123,8 @@ async function requestWakeLock() {
     isRequested = false;
     setUi(false, "防睡眠开启失败");
     setSupportMessage(error.message || "系统拒绝了防睡眠请求。");
+  } finally {
+    setBusy(false);
   }
 }
 
@@ -115,11 +133,15 @@ async function releaseWakeLock() {
 
   if (isNativeApp) {
     try {
+      setBusy(true);
+      toggleButton.classList.remove("is-on");
       await nativeInvoke("disable_prevent_sleep");
       setUi(false);
       setSupportMessage("已关闭系统级防睡眠。");
     } catch (error) {
       setSupportMessage(String(error));
+    } finally {
+      setBusy(false);
     }
     return;
   }
