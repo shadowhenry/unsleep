@@ -174,6 +174,10 @@ Browser preview is for UI debugging only. The actual anti-sleep capability is pr
 
 The desktop client docks in the system menu bar or tray.
 
+The app starts hidden: no window is opened on launch, and only the menu bar / tray icon stays visible. On macOS it runs as a pure menu-bar app (no Dock icon or Cmd+Tab entry); on Windows and Linux the window is simply hidden on startup.
+
+Clicking the window close button (X) only hides the window — it does not quit the app. The only way to fully quit is the "Quit" item in the menu bar / tray icon menu.
+
 Menu items:
 
 - Show Window

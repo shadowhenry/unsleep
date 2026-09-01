@@ -199,11 +199,21 @@ pub fn run() {
   #[cfg(desktop)]
   let builder = builder
     .setup(|app| {
+      // macOS 下以纯菜单栏应用运行（不出现在 Dock / Cmd+Tab，仅保留菜单栏图标）
+      #[cfg(target_os = "macos")]
+      app.set_activation_policy(tauri::ActivationPolicy::Accessory);
       setup_tray(app.handle())?;
       Ok(())
     });
 
   builder
+    .on_window_event(|window, event| {
+      // 关闭按钮（X）只隐藏主界面，不退出应用；退出只能通过菜单栏/托盘的“退出”
+      if let tauri::WindowEvent::CloseRequested { api, .. } = event {
+        api.prevent_close();
+        let _ = window.hide();
+      }
+    })
     .invoke_handler(tauri::generate_handler![
       enable_prevent_sleep,
       disable_prevent_sleep
