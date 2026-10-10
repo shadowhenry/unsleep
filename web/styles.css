@@ -124,7 +124,7 @@ h1 {
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   padding: 10px 15px;
   border: 1px solid var(--line);
   border-radius: 999px;
@@ -142,6 +142,7 @@ h1 {
 }
 
 .status-dot {
+  position: relative;
   width: 9px;
   height: 9px;
   border-radius: 50%;
@@ -149,16 +150,31 @@ h1 {
   box-shadow: 0 0 0 5px rgba(184, 176, 166, 0.14);
 }
 
+/* 呼吸光晕只做 opacity 变化，走合成层，不触发重绘 / 不重新栅格化阴影 */
+.status-dot::after {
+  content: "";
+  position: absolute;
+  inset: -11px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 143, 47, 0.6), rgba(255, 143, 47, 0) 70%);
+  opacity: 0;
+  pointer-events: none;
+}
+
 .status-badge.is-on .status-dot {
   background: var(--accent);
-  box-shadow: 0 0 0 5px rgba(255, 143, 47, 0.16), 0 0 22px rgba(255, 143, 47, 0.55);
-  animation: breathe 1.8s ease-in-out infinite;
+  box-shadow: 0 0 0 5px rgba(255, 143, 47, 0.16);
+}
+
+.status-badge.is-on .status-dot::after {
+  opacity: 0.5;
+  animation: glow-pulse 2.4s ease-in-out infinite;
 }
 
 .timer {
   display: grid;
   gap: 10px;
-  margin: 0 0 24px;
+  margin: 0 0 18px;
   padding: 18px;
   border-radius: 24px;
   background: rgba(255, 255, 255, 0.48);
@@ -177,6 +193,13 @@ h1 {
   font-size: 44px;
   font-weight: 820;
   line-height: 1;
+}
+
+.timer-note {
+  display: none;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 640;
 }
 
 .switch-control {
@@ -294,6 +317,53 @@ h1 {
   animation: thumb-wait 900ms ease-in-out infinite;
 }
 
+.mode-switch {
+  display: inline-flex;
+  gap: 6px;
+  margin: 12px auto 0;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: inset 0 0 0 1px rgba(44, 38, 31, 0.06);
+}
+
+.mode-chip {
+  border: 0;
+  padding: 8px 15px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 760;
+  cursor: pointer;
+  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+
+.mode-chip:hover {
+  color: var(--accent-strong);
+}
+
+.mode-chip:focus-visible {
+  outline: 3px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.mode-chip.is-active {
+  background: linear-gradient(135deg, #ffcf5a 0%, #ff8f2f 100%);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(255, 143, 47, 0.26);
+}
+
+.mode-hint {
+  min-height: 30px;
+  margin: 8px auto 0;
+  max-width: 300px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .support-text {
   min-height: 38px;
   margin: 16px auto 0;
@@ -303,14 +373,14 @@ h1 {
   max-width: 320px;
 }
 
-@keyframes breathe {
+@keyframes glow-pulse {
   0%,
   100% {
-    transform: scale(1);
+    opacity: 0.25;
   }
 
   50% {
-    transform: scale(1.24);
+    opacity: 0.85;
   }
 }
 
@@ -322,6 +392,48 @@ h1 {
 
   50% {
     filter: brightness(0.94);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * 长时间挂机的降耗策略：
+ * .is-idle      用户空闲 20 秒 → 停掉所有循环动画、去掉实时模糊、
+ *               计时器降频且不再显示秒（屏幕常亮时的主要自身发热来源）
+ * .is-suspended 窗口被隐藏（仅留菜单栏图标）→ 整个前端停摆
+ * ---------------------------------------------------------------- */
+
+body.is-idle .timer-note {
+  display: block;
+}
+
+body.is-idle *,
+body.is-idle *::before,
+body.is-idle *::after {
+  animation: none !important;
+}
+
+body.is-idle .status-badge.is-on .status-dot::after {
+  opacity: 0.5;
+}
+
+body.is-idle .status-panel {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 12px 28px rgba(91, 55, 22, 0.1);
+}
+
+body.is-suspended *,
+body.is-suspended *::before,
+body.is-suspended *::after {
+  animation-play-state: paused !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
   }
 }
 
