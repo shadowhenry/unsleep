@@ -195,13 +195,6 @@ h1 {
   line-height: 1;
 }
 
-.timer-note {
-  display: none;
-  color: var(--muted);
-  font-size: 11.5px;
-  font-weight: 640;
-}
-
 .switch-control {
   --switch-width: 220px;
   --switch-height: 62px;
@@ -317,53 +310,6 @@ h1 {
   animation: thumb-wait 900ms ease-in-out infinite;
 }
 
-.mode-switch {
-  display: inline-flex;
-  gap: 6px;
-  margin: 12px auto 0;
-  padding: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.5);
-  box-shadow: inset 0 0 0 1px rgba(44, 38, 31, 0.06);
-}
-
-.mode-chip {
-  border: 0;
-  padding: 8px 15px;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 760;
-  cursor: pointer;
-  transition: background 200ms ease, color 200ms ease, box-shadow 200ms ease;
-}
-
-.mode-chip:hover {
-  color: var(--accent-strong);
-}
-
-.mode-chip:focus-visible {
-  outline: 3px solid var(--ring);
-  outline-offset: 2px;
-}
-
-.mode-chip.is-active {
-  background: linear-gradient(135deg, #ffcf5a 0%, #ff8f2f 100%);
-  color: #fff;
-  box-shadow: 0 8px 18px rgba(255, 143, 47, 0.26);
-}
-
-.mode-hint {
-  min-height: 30px;
-  margin: 8px auto 0;
-  max-width: 300px;
-  color: var(--muted);
-  font-size: 12px;
-  line-height: 1.5;
-}
-
 .support-text {
   min-height: 38px;
   margin: 16px auto 0;
@@ -401,10 +347,6 @@ h1 {
  *               计时器降频且不再显示秒（屏幕常亮时的主要自身发热来源）
  * .is-suspended 窗口被隐藏（仅留菜单栏图标）→ 整个前端停摆
  * ---------------------------------------------------------------- */
-
-body.is-idle .timer-note {
-  display: block;
-}
 
 body.is-idle *,
 body.is-idle *::before,

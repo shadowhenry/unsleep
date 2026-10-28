@@ -9,16 +9,16 @@
 
 - **跨平台**：桌面端覆盖 macOS / Windows / Linux，移动端支持 iOS
 - **系统级防睡眠**：通过平台原生 API 阻止系统休眠 / 熄屏，不依赖网页焦点
-- **菜单栏 / 托盘常驻**：启动默认不弹窗，仅保留菜单栏或托盘图标
-- **一键开关**：点按开关即可启用 / 关闭防睡眠，并实时显示已保持清醒的时长
+- **纯菜单栏常驻**：不创建任何窗口，只在菜单栏 / 托盘留一个小图标
+- **一键开关**：菜单里点一下即可启用 / 关闭，当前状态直接显示在菜单项文字上
 - **原生实现**：macOS `caffeinate` / Windows `SetThreadExecutionState` / Linux `systemd-inhibit` / iOS `idleTimerDisabled`
 
 ## 技术架构
 
 | 层 | 技术 |
 | --- | --- |
-| 界面 | 原生 HTML / CSS / JS（`web/`，无前端框架），由 Tauri WebView 渲染 |
-| 核心 | Rust（Tauri 2.x），负责防睡眠状态机、托盘、窗口事件与 IPC 命令 |
+| 界面 | 无窗口，仅菜单栏 / 托盘菜单（`web/` 保留为浏览器调试用的备用界面） |
+| 核心 | Rust（Tauri 2.x），负责防睡眠状态机、托盘菜单与 IPC 命令 |
 | 防睡眠 | 平台原生 API：`caffeinate` / `SetThreadExecutionState` / `systemd-inhibit` / `idleTimerDisabled` |
 | 打包 | Tauri bundler（macOS dmg / Windows nsis / Linux AppImage·deb·rpm / iOS IPA） |
 
@@ -30,10 +30,10 @@ UnSleep/
 │   ├── styles.css        # 样式
 │   └── icon.png
 ├── src-tauri/            # Tauri 桌面端（Rust）
-│   ├── src/main.rs       # 入口：防睡眠状态机、托盘菜单、窗口关闭事件
+│   ├── src/main.rs       # 入口：防睡眠状态机、托盘菜单
 │   ├── build.rs          # 构建脚本
 │   ├── Cargo.toml        # Rust 依赖与配置
-│   ├── tauri.conf.json   # Tauri 配置（窗口、打包、权限）
+│   ├── tauri.conf.json   # Tauri 配置（无窗口、打包、权限）
 │   ├── capabilities/     # 权限能力声明（default.json）
 │   ├── icons/            # 各平台图标（macOS / Windows / Linux / iOS / Android）
 │   └── Info.plist        # macOS 打包元数据
@@ -75,7 +75,7 @@ npm install        # 安装依赖（@tauri-apps/cli）
 npm run dev        # 启动 Tauri 桌面应用
 ```
 
-这会启动 Tauri 桌面应用。点击“打开防睡眠”后，会启用系统级防睡眠。
+这会启动 Tauri 桌面应用——不会弹出窗口，只在菜单栏出现南瓜图标。点开菜单选择“打开防睡眠”即可启用。
 
 其它命令：
 
@@ -166,12 +166,11 @@ src-tauri/gen/apple/build/arm64/UnSleep.ipa
 
 ## 菜单栏 / 托盘
 
-桌面客户端会停靠在系统菜单栏或托盘中。应用启动默认不弹出界面，只保留菜单栏 / 托盘图标，主窗口隐藏；macOS 上以纯菜单栏应用运行（无 Dock 图标、不参与 Cmd+Tab），Windows / Linux 上仅隐藏启动窗口。
+桌面客户端只停靠在系统菜单栏 / 托盘中，不创建任何窗口；macOS 上以纯菜单栏应用运行（无 Dock 图标、不参与 Cmd+Tab）。
 
 菜单项：
 
-- 显示窗口
-- 打开防睡眠 / 关闭防睡眠
+- 打开防睡眠 / 关闭防睡眠（文字随当前状态变化）
 - 退出
 
 ## 开源协议

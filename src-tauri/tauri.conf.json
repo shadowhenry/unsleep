@@ -9,18 +9,7 @@
     "frontendDist": "../web"
   },
   "app": {
-    "withGlobalTauri": true,
-    "windows": [
-      {
-        "title": "UnSleep",
-        "width": 420,
-        "height": 560,
-        "minWidth": 340,
-        "minHeight": 460,
-        "resizable": true,
-        "visible": false
-      }
-    ],
+    "windows": [],
     "security": {
       "csp": null
     }
